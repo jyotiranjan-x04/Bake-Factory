@@ -1,0 +1,227 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderType {
+  STANDARD
+  CUSTOM
+}
+
+enum OrderStatus {
+  RECEIVED
+  ACKNOWLEDGED
+  CONFIRMED
+  BAKING
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PENDING
+  PAID
+  FAILED
+}
+
+enum MessageStatus {
+  QUEUED
+  SENT
+  FAILED
+}
+
+model Owner {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  passwordHash String
+  fullName     String
+  phoneNumber  String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  events       OrderEvent[] @relation("OrderEventCreatedBy")
+}
+
+model BakeryProfile {
+  id                 String   @id @default("main")
+  name               String   @default("Bake Factory")
+  tagline            String   @default("Premium handcrafted cakes for every celebration")
+  description        String?
+  phoneNumber        String?
+  whatsappNumber     String?
+  locationAddress    String?
+  latitude           Float?
+  longitude          Float?
+  mapsEmbedUrl       String?
+  heroTitle          String   @default("Bake Factory")
+  heroSubtitle       String   @default("Clay-crafted cakes. Premium taste. Effortless ordering.")
+  heroCtaLabel       String   @default("Order Now")
+  heroImageUrl       String?
+  bannerImageUrl     String?
+  primaryColor       String   @default("#F9C5D5")
+  secondaryColor     String   @default("#FDEBD3")
+  accentColor        String   @default("#F7D6BF")
+  timezone           String   @default("Asia/Kolkata")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model AvailabilitySchedule {
+  id        String   @id @default(cuid())
+  dayOfWeek Int
+  isClosed  Boolean  @default(false)
+  openTime  String
+  closeTime String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([dayOfWeek])
+}
+
+model ContentBlock {
+  id         String   @id @default(cuid())
+  key        String   @unique
+  title      String
+  content    String
+  imageUrl   String?
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  price       Int
+  imageUrl    String?
+  galleryJson String?
+  isFeatured  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  categoryId  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category Category?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  items  OrderItem[]
+}
+
+model Order {
+  id                   String        @id @default(cuid())
+  orderNumber          String        @unique
+  type                 OrderType     @default(STANDARD)
+  customerName         String
+  customerPhone        String
+  customerEmail        String?
+  customerAddress      String?
+  notes                String?
+  customization        String?
+  customImageUrl       String?
+  customPriceQuote     Int?
+  totalAmount          Int
+  status               OrderStatus   @default(RECEIVED)
+  paymentStatus        PaymentStatus @default(UNPAID)
+  isLocked             Boolean       @default(false)
+  lockReason           String?
+  estimatedPrepMinutes Int?
+  acknowledgedAt       DateTime?
+  confirmedAt          DateTime?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  items    OrderItem[]
+  events   OrderEvent[]
+  payments Payment[]
+  messages MessageLog[]
+
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  productId   String?
+  productName String
+  quantity    Int
+  unitPrice   Int
+  lineTotal   Int
+  createdAt   DateTime @default(now())
+
+  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+}
+
+model OrderEvent {
+  id              String   @id @default(cuid())
+  orderId         String
+  type            String
+  payload         String?
+  createdByOwnerId String?
+  createdAt       DateTime @default(now())
+
+  order          Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdByOwner Owner? @relation("OrderEventCreatedBy", fields: [createdByOwnerId], references: [id], onDelete: SetNull)
+
+  @@index([orderId, createdAt])
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  orderId           String
+  provider          String
+  providerPaymentId String?
+  amount            Int
+  status            PaymentStatus @default(PENDING)
+  paymentLink       String?
+  paidAt            DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+model WebhookEvent {
+  id              String   @id @default(cuid())
+  provider        String
+  providerEventId String
+  payload         String
+  processedAt     DateTime @default(now())
+
+  @@unique([provider, providerEventId])
+}
+
+model MessageLog {
+  id                String        @id @default(cuid())
+  orderId           String?
+  channel           String        @default("whatsapp")
+  templateName      String?
+  body              String
+  status            MessageStatus @default(QUEUED)
+  providerMessageId String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  order  Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+}
