@@ -10,6 +10,14 @@ import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
+type RelatedProduct = {
+  id: string;
+  name: string;
+  slug: string;
+  price: number;
+  imageUrl: string | null;
+};
+
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const product = await prisma.product.findUnique({ where: { slug } });
@@ -18,7 +26,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   }
 
   const detailImages = Array.from(new Set([product.imageUrl, ...catalogFallbackImages].filter((value): value is string => Boolean(value))));
-  const related = await prisma.product.findMany({
+  const related: RelatedProduct[] = await prisma.product.findMany({
     where: { isActive: true, id: { not: product.id } },
     take: 4,
     orderBy: { createdAt: "desc" },
