@@ -7,7 +7,8 @@ import { catalogFallbackImages } from "@/lib/bakery-images";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 type Category = { id: string; name: string; slug: string };
 type Product = {
@@ -20,10 +21,13 @@ type Product = {
   category?: { name: string; slug: string } | null;
 };
 
-export default function CatalogPage() {
+function CatalogContent() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>("all");
+  const [sortKey, setSortKey] = useState<string>("featured");
+  const searchParams = useSearchParams();
+  const query = (searchParams.get("q") || "").toLowerCase();
 
   useEffect(() => {
     const load = async () => {
@@ -37,33 +41,57 @@ export default function CatalogPage() {
   }, []);
 
   const filtered = useMemo(() => {
-    if (activeCategory === "all") {
-      return products;
+    let next = activeCategory === "all" ? products : products.filter((product) => product.category?.slug === activeCategory);
+
+    if (query) {
+      next = next.filter((product) =>
+        product.name.toLowerCase().includes(query) ||
+        (product.description || "").toLowerCase().includes(query),
+      );
     }
 
-    return products.filter((product) => product.category?.slug === activeCategory);
-  }, [activeCategory, products]);
+    if (sortKey === "price-asc") {
+      next = [...next].sort((a, b) => a.price - b.price);
+    } else if (sortKey === "price-desc") {
+      next = [...next].sort((a, b) => b.price - a.price);
+    }
+
+    return next;
+  }, [activeCategory, products, query, sortKey]);
 
   return (
     <main className="pb-8 sm:pb-10">
       <SiteHeader />
       <section className="section-wrap clay-card p-5 sm:p-6">
-        <h1 className="text-2xl font-extrabold sm:text-3xl">Cake Catalog</h1>
-        <p className="mt-2 text-sm text-[#5f4a3a]">Explore birthday, wedding, and custom-worthy masterpieces.</p>
+        <h1 className="font-display text-2xl font-extrabold sm:text-3xl">Cake Catalog</h1>
+        <p className="mt-2 text-sm text-[color:var(--muted)]">Explore birthday, wedding, and custom-worthy masterpieces.</p>
 
-        <div className="mt-5 flex gap-2 overflow-x-auto pb-2">
-          <button className={`clay-inset px-4 py-2 text-sm ${activeCategory === "all" ? "font-bold" : ""}`} onClick={() => setActiveCategory("all")}>
-            All
-          </button>
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              className={`clay-inset px-4 py-2 text-sm ${activeCategory === category.slug ? "font-bold" : ""}`}
-              onClick={() => setActiveCategory(category.slug)}
-            >
-              {category.name}
+        <div className="mt-5 grid gap-3 md:grid-cols-[1fr_auto] md:items-center">
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            <button className={`clay-inset px-4 py-2 text-sm ${activeCategory === "all" ? "font-bold" : ""}`} onClick={() => setActiveCategory("all")}>
+              All
             </button>
-          ))}
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                className={`clay-inset px-4 py-2 text-sm ${activeCategory === category.slug ? "font-bold" : ""}`}
+                onClick={() => setActiveCategory(category.slug)}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <select
+              className="clay-inset px-3 py-2 text-sm"
+              value={sortKey}
+              onChange={(event) => setSortKey(event.target.value)}
+            >
+              <option value="featured">Sort: Featured</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+            </select>
+          </div>
         </div>
       </section>
 
@@ -81,10 +109,10 @@ export default function CatalogPage() {
               alt={product.name}
               width={640}
               height={360}
-              className="mb-4 h-36 w-full rounded-xl border border-[#d7c5af] object-cover sm:h-40"
+              className="mb-4 h-36 w-full rounded-xl border border-[color:var(--line)] object-cover sm:h-40"
             />
-            <h3 className="text-lg font-bold">{product.name}</h3>
-            <p className="mt-2 line-clamp-2 text-sm text-[#5f4a3a]">{product.description}</p>
+            <h3 className="font-display text-lg font-bold">{product.name}</h3>
+            <p className="mt-2 line-clamp-2 text-sm text-[color:var(--muted)]">{product.description}</p>
             <div className="mt-4 flex items-center justify-between gap-3">
               <p className="font-semibold">₹{product.price}</p>
               <div className="flex flex-wrap items-center justify-end gap-2">
@@ -100,5 +128,13 @@ export default function CatalogPage() {
 
       <SiteFooter />
     </main>
+  );
+}
+
+export default function CatalogPage() {
+  return (
+    <Suspense fallback={<div className="section-wrap py-10 text-sm text-[color:var(--muted)]">Loading catalog...</div>}>
+      <CatalogContent />
+    </Suspense>
   );
 }

@@ -297,14 +297,23 @@ export default function AdminDashboardPage() {
 
   return (
     <main className="section-wrap py-6 sm:py-8">
-      <section className="clay-card p-4 sm:p-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-extrabold sm:text-3xl">Bake Factory Owner Dashboard</h1>
-            <p className="mt-1 text-sm text-[#5f4a3a]">Manage orders, custom requests, storefront content, and products.</p>
+      <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
+        <aside className="clay-card h-fit p-4">
+          <div className="mb-4">
+            <p className="text-xs uppercase tracking-[0.22em] text-[color:var(--muted)]">Admin</p>
+            <h1 className="font-display text-xl font-bold">Demo Bakery</h1>
+            <p className="mt-1 text-xs text-[color:var(--muted)]">Owner Dashboard</p>
           </div>
+
+          <nav className="space-y-2">
+            <button className={tab === "orders" ? "clay-button w-full px-4 py-2 text-sm" : "clay-inset w-full px-4 py-2 text-sm"} onClick={() => setTab("orders")}>Orders</button>
+            <button className={tab === "products" ? "clay-button w-full px-4 py-2 text-sm" : "clay-inset w-full px-4 py-2 text-sm"} onClick={() => setTab("products")}>Products & Categories</button>
+            <button className={tab === "content" ? "clay-button w-full px-4 py-2 text-sm" : "clay-inset w-full px-4 py-2 text-sm"} onClick={() => setTab("content")}>Content Management</button>
+            <button className={tab === "analytics" ? "clay-button w-full px-4 py-2 text-sm" : "clay-inset w-full px-4 py-2 text-sm"} onClick={() => setTab("analytics")}>Analytics</button>
+          </nav>
+
           <button
-            className="clay-inset px-4 py-2 text-sm"
+            className="clay-inset mt-4 w-full px-4 py-2 text-sm"
             onClick={async () => {
               await fetch("/api/auth/logout", { method: "POST" });
               window.location.href = "/admin/login";
@@ -312,66 +321,70 @@ export default function AdminDashboardPage() {
           >
             Logout
           </button>
-        </div>
+        </aside>
 
-        <div className="mt-4 flex flex-wrap gap-2">
-          <button className={tab === "orders" ? "clay-button px-4 py-2 text-sm" : "clay-inset px-4 py-2 text-sm"} onClick={() => setTab("orders")}>Orders</button>
-          <button className={tab === "products" ? "clay-button px-4 py-2 text-sm" : "clay-inset px-4 py-2 text-sm"} onClick={() => setTab("products")}>Products & Categories</button>
-          <button className={tab === "content" ? "clay-button px-4 py-2 text-sm" : "clay-inset px-4 py-2 text-sm"} onClick={() => setTab("content")}>Content Management</button>
-          <button className={tab === "analytics" ? "clay-button px-4 py-2 text-sm" : "clay-inset px-4 py-2 text-sm"} onClick={() => setTab("analytics")}>Analytics</button>
-        </div>
-      </section>
+        <section className="space-y-5">
+          <section className="clay-card flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
+            <div>
+              <h2 className="font-display text-2xl font-extrabold sm:text-3xl">Bake Factory Owner Dashboard</h2>
+              <p className="mt-1 text-sm text-[color:var(--muted)]">Manage orders, custom requests, storefront content, and products.</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <input className="clay-input hidden px-3 py-2 text-sm md:block" placeholder="Search orders" />
+              <span className="status-chip px-3 py-1 text-xs">Live</span>
+            </div>
+          </section>
 
-      {pendingOrders.length > 0 ? (
-        <section className="clay-card mt-5 border border-[#b67e57] bg-[#f5e4cf] p-4 sm:p-5">
-          <h2 className="font-bold text-[#4a2e1d]">🔔 New order alert ({pendingOrders.length})</h2>
-          <p className="text-sm text-[#5e3b27]">Ringtone continues until acknowledged.</p>
-        </section>
-      ) : null}
+          {pendingOrders.length > 0 ? (
+            <section className="clay-card border border-[color:var(--line)] bg-[#f1e4d6] p-4 sm:p-5">
+              <h2 className="font-bold text-[color:var(--foreground)]">🔔 New order alert ({pendingOrders.length})</h2>
+              <p className="text-sm text-[color:var(--muted)]">Ringtone continues until acknowledged.</p>
+            </section>
+          ) : null}
 
-      {error ? <p className="clay-error mt-4 text-sm">{error}</p> : null}
+          {error ? <p className="clay-error text-sm">{error}</p> : null}
 
-      {tab === "orders" ? (
-        <section className="mt-5 grid gap-4">
-          {orders.map((order) => (
-            <article key={order.id} className="clay-card space-y-3 p-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <p className="font-semibold">{order.orderNumber} · {order.customerName}</p>
-                  <p className="text-sm text-[#5f4a3a]">{order.customerPhone}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <StatusPill status={order.type} />
-                  <StatusPill status={order.status} />
-                  <StatusPill status={order.paymentStatus} />
-                </div>
-              </div>
+          {tab === "orders" ? (
+            <section className="grid gap-4">
+              {orders.map((order) => (
+                <article key={order.id} className="clay-card space-y-3 p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="font-semibold">{order.orderNumber} · {order.customerName}</p>
+                      <p className="text-sm text-[color:var(--muted)]">{order.customerPhone}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <StatusPill status={order.type} />
+                      <StatusPill status={order.status} />
+                      <StatusPill status={order.paymentStatus} />
+                    </div>
+                  </div>
 
-              {order.customization ? <p className="text-sm text-[#5f4a3a]">Custom notes: {order.customization}</p> : null}
-              {order.customImageUrl ? <a href={order.customImageUrl} target="_blank" className="clay-link text-sm underline">View uploaded custom image</a> : null}
+                  {order.customization ? <p className="text-sm text-[color:var(--muted)]">Custom notes: {order.customization}</p> : null}
+                  {order.customImageUrl ? <a href={order.customImageUrl} target="_blank" className="clay-link text-sm underline">View uploaded custom image</a> : null}
 
-              <p className="font-semibold">Amount: ₹{order.totalAmount}</p>
+                  <p className="font-semibold">Amount: ₹{order.totalAmount}</p>
 
-              {order.status === "RECEIVED" ? (
-                <SlideAcknowledge onComplete={() => acknowledgeOrder(order.id)} />
-              ) : null}
+                  {order.status === "RECEIVED" ? (
+                    <SlideAcknowledge onComplete={() => acknowledgeOrder(order.id)} />
+                  ) : null}
 
-              <div className="flex flex-wrap gap-2">
-                <button className="clay-button px-3 py-2 text-sm" onClick={() => confirmOrder(order.id)}>Confirm</button>
-                <button className="clay-inset px-3 py-2 text-sm" onClick={() => updateStatus(order.id, "BAKING")}>Baking</button>
-                <button className="clay-inset px-3 py-2 text-sm" onClick={() => updateStatus(order.id, "READY")}>Ready</button>
-                <button className="clay-inset px-3 py-2 text-sm" onClick={() => sendPaymentLink(order.id)}>Send payment link</button>
-                {order.type === "CUSTOM" ? (
-                  <button className="clay-inset px-3 py-2 text-sm" onClick={() => setCustomQuote(order.id)}>Set custom price</button>
-                ) : null}
-              </div>
-            </article>
-          ))}
-        </section>
-      ) : null}
+                  <div className="flex flex-wrap gap-2">
+                    <button className="clay-button px-3 py-2 text-sm" onClick={() => confirmOrder(order.id)}>Confirm</button>
+                    <button className="clay-inset px-3 py-2 text-sm" onClick={() => updateStatus(order.id, "BAKING")}>Baking</button>
+                    <button className="clay-inset px-3 py-2 text-sm" onClick={() => updateStatus(order.id, "READY")}>Ready</button>
+                    <button className="clay-inset px-3 py-2 text-sm" onClick={() => sendPaymentLink(order.id)}>Send payment link</button>
+                    {order.type === "CUSTOM" ? (
+                      <button className="clay-inset px-3 py-2 text-sm" onClick={() => setCustomQuote(order.id)}>Set custom price</button>
+                    ) : null}
+                  </div>
+                </article>
+              ))}
+            </section>
+          ) : null}
 
-      {tab === "products" ? (
-        <section className="mt-5 grid gap-5 lg:grid-cols-2">
+          {tab === "products" ? (
+            <section className="grid gap-5 lg:grid-cols-2">
           <article className="clay-card p-5">
             <h2 className="text-xl font-bold">Create Category</h2>
             <form className="mt-3 space-y-3" onSubmit={createCategory}>
@@ -422,10 +435,10 @@ export default function AdminDashboardPage() {
             </div>
           </article>
         </section>
-      ) : null}
+          ) : null}
 
-      {tab === "content" ? (
-        <section className="mt-5 grid gap-5 lg:grid-cols-2">
+          {tab === "content" ? (
+            <section className="grid gap-5 lg:grid-cols-2">
           <article className="clay-card p-5 lg:col-span-2">
             <h2 className="text-xl font-bold">Homepage & Bakery Profile</h2>
             <form className="mt-3 grid gap-3 md:grid-cols-2" onSubmit={updateBakeryProfile}>
@@ -463,26 +476,26 @@ export default function AdminDashboardPage() {
               {contentBlocks.map((item) => (
                 <div key={item.id} className="clay-inset px-3 py-2">
                   <p className="font-semibold">{item.key} · {item.title}</p>
-                  <p className="text-sm text-[#5f4a3a]">{item.content}</p>
+                  <p className="text-sm text-[color:var(--muted)]">{item.content}</p>
                 </div>
               ))}
             </div>
           </article>
         </section>
-      ) : null}
+          ) : null}
 
-      {tab === "analytics" ? (
-        <section className="mt-5 grid gap-5 md:grid-cols-3">
+          {tab === "analytics" ? (
+            <section className="grid gap-5 md:grid-cols-3">
           <article className="clay-card p-5">
-            <p className="text-sm text-[#5f4a3a]">Total Orders</p>
+            <p className="text-sm text-[color:var(--muted)]">Total Orders</p>
             <p className="text-3xl font-bold">{analytics?.totalOrders ?? 0}</p>
           </article>
           <article className="clay-card p-5">
-            <p className="text-sm text-[#5f4a3a]">Total Revenue</p>
+            <p className="text-sm text-[color:var(--muted)]">Total Revenue</p>
             <p className="text-3xl font-bold">₹{analytics?.totalRevenue ?? 0}</p>
           </article>
           <article className="clay-card p-5">
-            <p className="text-sm text-[#5f4a3a]">Popular Products</p>
+            <p className="text-sm text-[color:var(--muted)]">Popular Products</p>
             <ul className="mt-2 space-y-1 text-sm">
               {analytics?.popularProducts?.map((item) => (
                 <li key={item.productName}>{item.productName} · {item._sum.quantity ?? 0}</li>
@@ -490,7 +503,9 @@ export default function AdminDashboardPage() {
             </ul>
           </article>
         </section>
-      ) : null}
+          ) : null}
+        </section>
+      </div>
     </main>
   );
 }

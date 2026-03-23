@@ -28,7 +28,9 @@ export default function TrackOrderLookupPage() {
       <SiteHeader />
       <section className="section-wrap">
         <form onSubmit={submit} className="clay-card space-y-4 p-6">
-          <h1 className="text-3xl font-bold">Track Your Order</h1>
+          <p className="text-xs uppercase tracking-[0.24em] text-[color:var(--muted)]">Order Tracking</p>
+          <h1 className="font-display text-3xl font-bold">Track Your Order</h1>
+          <p className="text-sm text-[color:var(--muted)]">Enter the order ID from your confirmation message.</p>
           <input name="orderId" placeholder="Enter your order ID" className="clay-input w-full px-4 py-3" required />
           {error ? <p className="feedback-error text-sm">{error}</p> : null}
           <button type="submit" className="clay-button px-5 py-3 font-semibold">

@@ -54,6 +54,17 @@ export const createCustomOrderSchema = z.object({
   budget: z.number().int().positive().optional(),
 });
 
+export const subscribeSchema = z.object({
+  email: z.string().email(),
+  name: z.string().min(2).optional(),
+  source: z.string().optional(),
+});
+
+export const promoValidateSchema = z.object({
+  code: z.string().min(2),
+  subtotal: z.number().int().min(0),
+});
+
 export const productSchema = z.object({
   name: z.string().min(2),
   slug: z.string().min(2),

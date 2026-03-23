@@ -1,20 +1,25 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f2ece1;
-  --foreground: #2a1713;
-  --surface: #fff9f1;
-  --surface-2: #efe6d8;
-  --muted: #6d5848;
-  --accent: #8a583a;
-  --accent-strong: #6f452f;
-  --line: #d7c5af;
+  --background: #f5eee6;
+  --foreground: #3b2a1e;
+  --surface: #fff7ee;
+  --surface-2: #e8d9c8;
+  --muted: #6e5442;
+  --accent: #b07b4a;
+  --accent-strong: #8a6a4f;
+  --line: #d9c7b4;
+  --accent-soft: #c89a5a;
 }
 
 body {
-  background: radial-gradient(circle at 20% 16%, #f7f1e7 0%, #f2ece1 42%, #ece2d4 100%);
+  background: radial-gradient(circle at 18% 12%, #fbf4ec 0%, #f5eee6 46%, #eaded0 100%);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), sans-serif;
+  font-family: var(--font-body), sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display), serif;
 }
 
 .clay-card {
@@ -22,7 +27,7 @@ body {
   border-radius: 24px;
   background: linear-gradient(180deg, var(--surface), var(--surface-2));
   box-shadow:
-    0 10px 26px rgba(84, 58, 41, 0.12),
+    0 10px 26px rgba(59, 42, 30, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
@@ -35,7 +40,7 @@ body {
 .clay-inset {
   border: 1px solid var(--line);
   border-radius: 16px;
-  background: linear-gradient(180deg, #fcf7ee, #f2e8da);
+  background: linear-gradient(180deg, #fff7ee, #efe1d3);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
@@ -44,7 +49,7 @@ body {
 }
 
 .clay-inset:is(input, textarea, select)::placeholder {
-  color: #7d6a58;
+  color: #7a624f;
 }
 
 .clay-inset:is(input, textarea, select):focus {
@@ -52,15 +57,15 @@ body {
   border-color: var(--accent);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    0 0 0 2px rgba(138, 88, 58, 0.16);
+    0 0 0 2px rgba(176, 123, 74, 0.16);
 }
 
 .clay-danger {
-  color: #8f3f35;
+  color: #8a4c3a;
 }
 
 .clay-danger:hover {
-  color: #6f2f27;
+  color: #6f3a2b;
 }
 
 .clay-link {
@@ -72,20 +77,20 @@ body {
 }
 
 .clay-error {
-  color: #8f3f35;
+  color: #8a4c3a;
 }
 
 .clay-success {
-  color: #5d4939;
+  color: #5e4a3c;
 }
 
 .clay-button {
-  border: 1px solid #7a4e34;
+  border: 1px solid #8a6a4f;
   border-radius: 999px;
-  background: linear-gradient(180deg, #996444, var(--accent));
+  background: linear-gradient(180deg, var(--accent-soft), var(--accent));
   color: #fff7ef;
   box-shadow:
-    0 8px 16px rgba(76, 47, 31, 0.24),
+    0 8px 16px rgba(59, 42, 30, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   transition: transform 160ms ease, box-shadow 160ms ease;
   white-space: nowrap;
@@ -94,7 +99,7 @@ body {
 .clay-button:hover {
   transform: translateY(-1px) scale(1.01);
   box-shadow:
-    0 10px 18px rgba(76, 47, 31, 0.32),
+    0 10px 18px rgba(59, 42, 30, 0.32),
     inset 0 1px 0 rgba(255, 255, 255, 0.24);
 }
 
@@ -116,40 +121,40 @@ body {
 .clay-input {
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: linear-gradient(180deg, #fcf7ee, #f2e8da);
+  background: linear-gradient(180deg, #fff7ee, #efe1d3);
   color: var(--foreground);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .clay-input::placeholder {
-  color: #8a7868;
+  color: #8a7361;
 }
 
 .clay-input:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow:
-    0 0 0 2px rgba(138, 88, 58, 0.18),
+    0 0 0 2px rgba(176, 123, 74, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .feedback-error {
-  color: #8b4a34;
+  color: #8a4c3a;
 }
 
 .feedback-success {
-  color: #6f452f;
+  color: #6f4a35;
 }
 
 .status-chip {
-  border: 1px solid #ccb49a;
+  border: 1px solid #d9c7b4;
   border-radius: 999px;
-  background: #f4e8d8;
+  background: #f2e4d6;
   color: #4a2f20;
 }
 
 .status-chip-strong {
-  border-color: #b88e6d;
-  background: #ead4bc;
+  border-color: #c89a5a;
+  background: #ead7c3;
   color: #3b2418;
 }

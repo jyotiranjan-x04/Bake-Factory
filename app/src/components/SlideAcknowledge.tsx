@@ -37,7 +37,7 @@ export function SlideAcknowledge({ onComplete, disabled }: SlideAcknowledgeProps
         value={value}
         disabled={disabled || loading}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="w-full accent-[#8a583a]"
+        className="w-full accent-[#b07b4a]"
       />
       <p className="text-xs text-[#6d5848]">Slide all the way right to stop ringing alert.</p>
     </div>

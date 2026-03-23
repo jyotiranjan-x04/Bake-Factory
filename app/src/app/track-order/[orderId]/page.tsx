@@ -54,8 +54,9 @@ export default function TrackOrderPage() {
     <main className="pb-10">
       <SiteHeader />
       <section className="section-wrap clay-card p-6">
-        <h1 className="text-3xl font-bold">Track Order Status</h1>
-        <p className="mt-2 text-sm text-[#5f4a3a]">Order ID: {orderId}</p>
+        <p className="text-xs uppercase tracking-[0.24em] text-[color:var(--muted)]">Order Status</p>
+        <h1 className="font-display text-3xl font-bold">Track Order Status</h1>
+        <p className="mt-2 text-sm text-[color:var(--muted)]">Order ID: {orderId}</p>
 
         <div className="mt-4">
           <input
