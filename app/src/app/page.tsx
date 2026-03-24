@@ -136,13 +136,13 @@ export default async function Home() {
                 </div>
               </SlideInLeft>
               
-              <SlideInRight className="relative mx-auto mt-8 w-full max-w-[320px] sm:max-w-[380px] lg:mt-0 xl:max-w-[420px]">
+              <SlideInRight className="relative mx-auto mt-6 w-full max-w-[260px] sm:max-w-[310px] lg:mt-0 xl:max-w-[340px]">
                 {/* Designer Frame Backdrops */}
-                <div className="absolute -inset-6 z-0 rotate-3 rounded-[32px] border border-[#d9af62]/30 bg-white/5 backdrop-blur-md transition-transform duration-700 hover:rotate-6 sm:-inset-8 sm:rounded-[40px]"></div>
-                <div className="absolute -inset-3 z-0 -rotate-2 rounded-[28px] bg-gradient-to-tr from-[#3b2a1e]/80 to-[#d9af62]/40 shadow-2xl sm:-inset-4 sm:rounded-[36px]"></div>
+                <div className="absolute -inset-4 z-0 rotate-3 rounded-[28px] border border-[#d9af62]/30 bg-white/5 backdrop-blur-md transition-transform duration-700 hover:rotate-6 sm:-inset-6 sm:rounded-[34px]"></div>
+                <div className="absolute -inset-2 z-0 -rotate-2 rounded-[24px] bg-gradient-to-tr from-[#3b2a1e]/80 to-[#d9af62]/40 shadow-2xl sm:-inset-3 sm:rounded-[30px]"></div>
                 
                 {/* Main Carousel Container */}
-                <div className="relative z-10 aspect-[4/5] w-full overflow-hidden rounded-[24px] border-[6px] border-[#f5eee6]/20 bg-[#1a120c] shadow-[0_0_40px_rgba(0,0,0,0.6)] sm:rounded-[32px]">
+                <div className="relative z-10 aspect-[4/5] w-full overflow-hidden rounded-[20px] border-[5px] border-[#f5eee6]/20 bg-[#1a120c] shadow-[0_0_34px_rgba(0,0,0,0.58)] sm:rounded-[26px]">
                   <ImageCarousel
                     images={[
                       "/assets/cakes/chocolate.jpg",
@@ -157,7 +157,7 @@ export default async function Home() {
                 </div>
 
                 {/* Floating Designer Badge */}
-                <ScaleIn delay={0.4} className="absolute -right-4 -top-8 z-20 flex h-[90px] w-[90px] items-center justify-center rounded-full border-2 border-[#f5eee6]/40 bg-[#B07B4A] p-2 text-center text-[10px] font-black uppercase leading-tight tracking-widest text-[#f5eee6] shadow-xl sm:-right-8 sm:-top-10 sm:h-[110px] sm:w-[110px] sm:text-xs">
+                <ScaleIn delay={0.4} className="absolute -right-3 -top-6 z-20 flex h-[72px] w-[72px] items-center justify-center rounded-full border-2 border-[#f5eee6]/40 bg-[#B07B4A] p-2 text-center text-[9px] font-black uppercase leading-tight tracking-widest text-[#f5eee6] shadow-xl sm:-right-5 sm:-top-8 sm:h-[86px] sm:w-[86px] sm:text-[10px]">
                   Artisan<br/>Baked
                 </ScaleIn>
               </SlideInRight>
@@ -253,6 +253,69 @@ export default async function Home() {
               <span className="material-symbols-outlined text-3xl text-[color:var(--primary)]">{item.icon}</span>
               <h3 className="mt-3 font-display text-lg font-bold">{item.title}</h3>
               <p className="mt-2 text-sm text-[color:var(--muted)]">{item.text}</p>
+            </StaggerItem>
+          ))}
+        </StaggerContainer>
+      </section>
+
+      <section className="section-wrap mt-16">
+        <FadeIn className="mb-8 text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-[color:var(--primary)]">Daily Momentum</p>
+          <h2 className="font-display mt-2 text-3xl font-bold">Loved Across Every Celebration</h2>
+        </FadeIn>
+        <StaggerContainer className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            { label: "Cakes Delivered", value: "12K+", icon: "cake" },
+            { label: "5-Star Reviews", value: "4.9/5", icon: "stars" },
+            { label: "Cities Served", value: "18", icon: "location_on" },
+            { label: "Repeat Customers", value: "82%", icon: "favorite" },
+          ].map((stat, index) => (
+            <StaggerItem key={stat.label}>
+              <ScaleIn delay={index * 0.08} className="clay-card flex h-full items-center gap-4 p-5">
+                <span className="material-symbols-outlined text-3xl text-[color:var(--primary)]">{stat.icon}</span>
+                <div>
+                  <p className="font-display text-2xl font-extrabold text-[color:var(--foreground)]">{stat.value}</p>
+                  <p className="text-sm text-[color:var(--muted)]">{stat.label}</p>
+                </div>
+              </ScaleIn>
+            </StaggerItem>
+          ))}
+        </StaggerContainer>
+      </section>
+
+      <section className="section-wrap mt-16">
+        <FadeIn className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-[color:var(--primary)]">Testimonials</p>
+            <h2 className="font-display mt-2 text-3xl font-bold">What Customers Are Saying</h2>
+          </div>
+          <Link href="/catalog" className="clay-link text-sm font-semibold">Order Your Favorite</Link>
+        </FadeIn>
+        <StaggerContainer className="grid gap-5 md:grid-cols-3">
+          {[
+            {
+              quote: "The wedding cake looked stunning and tasted even better. Guests still ask us where we got it.",
+              name: "Aarohi & Kunal",
+            },
+            {
+              quote: "The same-day delivery saved my daughter’s birthday. Perfect texture, premium finish, zero stress.",
+              name: "Niharika S.",
+            },
+            {
+              quote: "Our weekly pastry box has become a family ritual. Every week feels like a celebration.",
+              name: "Rahul M.",
+            },
+          ].map((item) => (
+            <StaggerItem key={item.name} className="clay-card h-full p-6 transition-transform duration-300 hover:-translate-y-1">
+              <div className="mb-4 flex items-center gap-1 text-[color:var(--primary)]">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <span key={index} className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    star
+                  </span>
+                ))}
+              </div>
+              <p className="text-sm leading-relaxed text-[color:var(--muted)]">“{item.quote}”</p>
+              <p className="mt-5 font-semibold text-[color:var(--foreground)]">{item.name}</p>
             </StaggerItem>
           ))}
         </StaggerContainer>
