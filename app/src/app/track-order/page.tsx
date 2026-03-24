@@ -2,6 +2,7 @@
 
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { BackButton } from "@/components/BackButton";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
@@ -28,6 +29,7 @@ export default function TrackOrderLookupPage() {
       <SiteHeader />
       <section className="section-wrap">
         <form onSubmit={submit} className="clay-card space-y-4 p-6">
+          <BackButton fallbackHref="/" />
           <p className="text-xs uppercase tracking-[0.24em] text-[color:var(--muted)]">Order Tracking</p>
           <h1 className="font-display text-3xl font-bold">Track Your Order</h1>
           <p className="text-sm text-[color:var(--muted)]">Enter the order ID from your confirmation message.</p>

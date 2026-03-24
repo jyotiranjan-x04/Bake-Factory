@@ -1,7 +1,8 @@
 "use client";
 
 import { SiteFooter } from "@/components/SiteFooter";
-import { SiteHeader } from "@/components/SiteHeader";
+import { StitchTopNav } from "@/components/StitchTopNav";
+import { BackButton } from "@/components/BackButton";
 import { useCart } from "@/components/Providers";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
@@ -51,48 +52,118 @@ export default function CheckoutPage() {
   };
 
   return (
-    <main className="pb-8 sm:pb-10">
-      <SiteHeader />
-      <section className="section-wrap space-y-4">
-        <div className="clay-card flex flex-wrap items-center justify-between gap-3 px-5 py-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.24em] text-[color:var(--muted)]">Checkout</p>
-            <h1 className="font-display text-2xl font-bold sm:text-3xl">Finalize your order</h1>
-          </div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-[color:var(--muted)]">
-            <span className="status-chip px-3 py-1">Cart</span>
-            <span className="status-chip-strong px-3 py-1">Details</span>
-            <span className="status-chip px-3 py-1">Payment</span>
-            <span className="status-chip px-3 py-1">Review</span>
+    <main className="pb-12">
+      <StitchTopNav active="cakes" />
+      <section className="section-wrap pt-8">
+        <div className="mb-4">
+          <BackButton fallbackHref="/cart" />
+        </div>
+        <div className="mx-auto mb-10 max-w-2xl overflow-x-auto">
+          <div className="flex min-w-max items-center justify-between gap-6 px-1">
+            {["Cart", "Details", "Payment", "Review"].map((step, index) => (
+              <div key={step} className="flex flex-col items-center gap-2">
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                    index === 1 ? "bg-[color:var(--primary)] text-white" : "bg-[color:var(--surface-high)] text-[color:var(--muted)]"
+                  }`}
+                >
+                  {index + 1}
+                </div>
+                <span className={`text-[10px] font-bold uppercase tracking-[0.2em] ${index === 1 ? "text-[color:var(--primary)]" : "text-[color:var(--muted)]"}`}>
+                  {step}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="section-wrap grid gap-5 sm:gap-6 md:grid-cols-[1fr_360px]">
-        <form onSubmit={placeOrder} className="clay-card space-y-4 p-5 sm:p-6">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <input name="customerName" placeholder="Full name" className="clay-input w-full px-4 py-3" required />
-            <input name="customerPhone" placeholder="WhatsApp number" className="clay-input w-full px-4 py-3" required />
-            <input name="customerEmail" type="email" placeholder="Email (optional)" className="clay-input w-full px-4 py-3" />
-            <input name="deliveryDate" type="date" className="clay-input w-full px-4 py-3" />
-            <input name="deliverySlot" placeholder="Delivery time (e.g., 4-6 PM)" className="clay-input w-full px-4 py-3 sm:col-span-2" />
-          </div>
-          <textarea name="customerAddress" rows={3} placeholder="Delivery address" className="clay-input w-full px-4 py-3" />
+      <section className="section-wrap grid gap-10 lg:grid-cols-12">
+        <form onSubmit={placeOrder} className="lg:col-span-8 space-y-8">
+          <section>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="font-display text-3xl font-bold">Delivery Address</h2>
+              <button type="button" className="text-sm font-semibold text-[color:var(--primary)]">Add New</button>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="clay-card p-5">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[color:var(--muted)]">Home</p>
+                <p className="mt-2 text-sm font-semibold">{items[0]?.name ? "Demo Bakery Guest" : "Jane Doe"}</p>
+                <p className="mt-2 text-xs text-[color:var(--muted)]">123 Bake Street, Demo City</p>
+              </div>
+              <div className="clay-card p-5">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[color:var(--muted)]">Office</p>
+                <p className="mt-2 text-sm font-semibold">Demo Bakery HQ</p>
+                <p className="mt-2 text-xs text-[color:var(--muted)]">456 Pastry Plaza, Suite 200</p>
+              </div>
+            </div>
+          </section>
 
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={isGift} onChange={(event) => setIsGift(event.target.checked)} />
-            This is a gift
-          </label>
+          <section className="clay-card p-6">
+            <h2 className="font-display text-2xl font-bold">Preferred Delivery</h2>
+            <div className="mt-6 grid gap-6 md:grid-cols-2">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[color:var(--muted)]">Select Date</p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  {["Oct 24", "Oct 25", "Oct 26"].map((date) => (
+                    <button key={date} type="button" className="rounded-2xl bg-[color:var(--surface-card)] px-4 py-3 text-xs font-bold">
+                      {date}
+                    </button>
+                  ))}
+                </div>
+                <input name="deliveryDate" type="date" className="clay-input mt-4 w-full px-4 py-3" />
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[color:var(--muted)]">Select Time Slot</p>
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  {[
+                    "08:00 - 10:00 AM",
+                    "10:00 - 12:00 PM",
+                    "02:00 - 04:00 PM",
+                    "04:00 - 06:00 PM",
+                  ].map((slot) => (
+                    <button key={slot} type="button" className="rounded-full bg-[color:var(--surface-card)] px-3 py-2 text-xs font-semibold">
+                      {slot}
+                    </button>
+                  ))}
+                </div>
+                <input name="deliverySlot" placeholder="Preferred delivery slot" className="clay-input mt-4 w-full px-4 py-3" />
+              </div>
+            </div>
+          </section>
 
-          {isGift ? (
-            <textarea name="notes" rows={2} placeholder="Gift message" className="clay-input w-full px-4 py-3" />
-          ) : (
-            <textarea name="notes" rows={2} placeholder="Notes for bakery" className="clay-input w-full px-4 py-3" />
-          )}
+          <section className="clay-card p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[color:var(--primary)]">featured_seasonal_and_gifts</span>
+                <h2 className="font-display text-2xl font-bold">Gift Message</h2>
+              </div>
+              <label className="flex items-center gap-2 text-xs font-semibold text-[color:var(--muted)]">
+                <input type="checkbox" checked={isGift} onChange={(event) => setIsGift(event.target.checked)} />
+                This is a gift
+              </label>
+            </div>
+            <textarea
+              name="notes"
+              rows={3}
+              placeholder={isGift ? "Write a thoughtful note to include with your treats..." : "Notes for bakery"}
+              className="clay-input w-full px-4 py-3"
+            />
+          </section>
 
-          <div className="space-y-2">
-            <p className="text-sm font-semibold text-[color:var(--foreground)]">Payment Method</p>
-            <div className="grid gap-2 sm:grid-cols-3">
+          <section className="clay-card p-6">
+            <h2 className="font-display text-2xl font-bold">Contact Information</h2>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <input name="customerName" placeholder="Full name" className="clay-input w-full px-4 py-3" required />
+              <input name="customerPhone" placeholder="Phone number" className="clay-input w-full px-4 py-3" required />
+              <input name="customerEmail" type="email" placeholder="Email (optional)" className="clay-input w-full px-4 py-3" />
+              <input name="customerAddress" placeholder="Delivery address" className="clay-input w-full px-4 py-3" />
+            </div>
+          </section>
+
+          <section className="clay-card p-6">
+            <p className="text-sm font-semibold">Payment Method</p>
+            <div className="mt-4 grid gap-2 sm:grid-cols-3">
               {[
                 { value: "card", label: "Card" },
                 { value: "upi", label: "UPI" },
@@ -108,28 +179,35 @@ export default function CheckoutPage() {
                 </button>
               ))}
             </div>
-          </div>
-
-          {error ? <p className="feedback-error text-sm">{error}</p> : null}
-          <button type="submit" className="clay-button px-5 py-3 font-semibold">Place Order</button>
+            {error ? <p className="feedback-error mt-4 text-sm">{error}</p> : null}
+            <button type="submit" className="clay-button mt-6 px-6 py-4 text-sm font-semibold">
+              Complete Purchase
+            </button>
+          </section>
         </form>
 
-        <aside className="clay-card h-fit p-5 sm:p-6">
-          <h2 className="font-display text-xl font-bold">Order Summary</h2>
-          <div className="mt-4 space-y-3 text-sm">
-            {items.map((item) => (
-              <div key={item.productId} className="flex items-center justify-between">
-                <span>{item.name} x{item.quantity}</span>
-                <span>₹{item.price * item.quantity}</span>
+        <aside className="lg:col-span-4 lg:sticky lg:top-24">
+          <div className="clay-card overflow-hidden">
+            <div className="border-b border-[color:var(--surface-high)] p-6">
+              <h3 className="font-display text-xl font-bold">Order Summary</h3>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                {items.map((item) => (
+                  <div key={item.productId} className="flex items-center justify-between text-sm">
+                    <span>{item.name} x{item.quantity}</span>
+                    <span>₹{item.price * item.quantity}</span>
+                  </div>
+                ))}
               </div>
-            ))}
+              <div className="mt-6 space-y-2 text-sm">
+                <div className="flex justify-between"><span>Delivery</span><span>{deliveryFee === 0 ? "Free" : `₹${deliveryFee}`}</span></div>
+                <div className="flex justify-between"><span>Taxes</span><span>₹{taxAmount}</span></div>
+              </div>
+              <div className="mt-6 border-t border-[color:var(--surface-high)] pt-4 text-lg font-bold">Total: ₹{grandTotal}</div>
+              <p className="mt-4 text-xs text-[color:var(--muted)]">Secure payment · Freshly baked on demand</p>
+            </div>
           </div>
-          <div className="mt-4 space-y-2 text-sm">
-            <div className="flex items-center justify-between"><span>Delivery</span><span>{deliveryFee === 0 ? "Free" : `₹${deliveryFee}`}</span></div>
-            <div className="flex items-center justify-between"><span>Taxes</span><span>₹{taxAmount}</span></div>
-          </div>
-          <div className="mt-5 border-t border-[color:var(--line)] pt-4 text-lg font-bold">Total: ₹{grandTotal}</div>
-          <p className="mt-3 text-xs text-[color:var(--muted)]">Secure payment · Freshly baked on demand</p>
         </aside>
       </section>
       <SiteFooter />

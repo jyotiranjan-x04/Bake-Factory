@@ -39,14 +39,14 @@ export function ImageCarousel({ images, altPrefix, className, autoPlayMs = 4200,
   const next = () => setActiveIndex((prev) => (prev + 1) % safeImages.length);
 
   return (
-    <div className={`relative overflow-hidden rounded-[18px] border border-[#d7c5af] bg-[#f6eadb] ${className || ""}`}>
+    <div className={`relative overflow-hidden rounded-[18px] bg-[color:var(--surface-card)] shadow-[0_20px_40px_rgba(59,42,30,0.08)] ${className || ""}`}>
       <Image
         src={safeImages[activeIndex]}
         alt={`${altPrefix} ${activeIndex + 1}`}
         fill
         sizes="(max-width: 640px) 94vw, (max-width: 1024px) 92vw, 1200px"
-        loading={prioritizeFirst && activeIndex === 0 ? "eager" : "lazy"}
-        priority={prioritizeFirst && activeIndex === 0}
+        loading={prioritizeFirst ? "eager" : "lazy"}
+        priority={prioritizeFirst}
         unoptimized
         className="object-cover"
       />
@@ -57,6 +57,7 @@ export function ImageCarousel({ images, altPrefix, className, autoPlayMs = 4200,
             type="button"
             aria-label="Previous image"
             onClick={previous}
+            suppressHydrationWarning
             className="clay-inset absolute left-2 top-1/2 -translate-y-1/2 px-2.5 py-1.5 text-xs font-bold sm:left-3 sm:px-3"
           >
             ‹
@@ -65,6 +66,7 @@ export function ImageCarousel({ images, altPrefix, className, autoPlayMs = 4200,
             type="button"
             aria-label="Next image"
             onClick={next}
+            suppressHydrationWarning
             className="clay-inset absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1.5 text-xs font-bold sm:right-3 sm:px-3"
           >
             ›
@@ -77,7 +79,8 @@ export function ImageCarousel({ images, altPrefix, className, autoPlayMs = 4200,
                 type="button"
                 aria-label={`Go to image ${index + 1}`}
                 onClick={() => setActiveIndex(index)}
-                className={`h-2.5 w-2.5 rounded-full border border-[#c8b299] ${index === activeIndex ? "bg-[#8a583a]" : "bg-[#f8f1e7]"}`}
+                suppressHydrationWarning
+                className={`h-2.5 w-2.5 rounded-full ${index === activeIndex ? "bg-[color:var(--primary)]" : "bg-[color:var(--surface-highest)]"}`}
               />
             ))}
           </div>

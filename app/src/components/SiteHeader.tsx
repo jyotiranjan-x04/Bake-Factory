@@ -3,48 +3,119 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useCart } from "@/components/Providers";
+import { useState } from "react";
 
 export function SiteHeader() {
   const { items } = useCart();
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const closeMobileMenu = () => setMobileOpen(false);
+
+  const navItems = [
+    { label: "Cakes", href: "/catalog" },
+    { label: "Pastries", href: "/catalog?category=pastries" },
+    { label: "Breads", href: "/catalog?category=breads" },
+    { label: "Gifts", href: "/catalog?category=gifts" },
+    { label: "Seasonal", href: "/catalog?category=seasonal" },
+  ];
 
   return (
     <motion.header
       initial={{ opacity: 0, y: -14 }}
       animate={{ opacity: 1, y: 0 }}
-      className="sticky top-2 z-40 section-wrap mb-5 sm:top-3 sm:mb-6"
+      className="sticky top-2 z-50 w-full px-2 sm:px-3"
     >
-      <div className="overflow-hidden rounded-[22px] border border-[color:var(--line)] bg-[color:var(--surface)]/95 shadow-[0_10px_28px_rgba(59,42,30,0.12)] backdrop-blur">
-        <div className="flex items-center justify-between border-b border-[color:var(--line)] px-4 py-2 text-[11px] text-[color:var(--muted)] sm:px-5 sm:text-xs">
-          <p>Freshly baked daily · Demo Bakery</p>
-          <p className="hidden sm:block">Mon-Sat · 10:00 AM - 8:00 PM</p>
+      <div className="section-wrap flex flex-col gap-3 rounded-2xl border border-[color:var(--surface-highest)]/65 py-3 shadow-[0_12px_32px_rgba(59,42,30,0.06)] glass-nav sm:gap-4 sm:py-4">
+        <div className="flex items-center justify-between gap-3">
+          <Link href="/" className="font-display text-2xl font-bold tracking-tight text-[color:var(--primary)]">
+            Demo Bakery
+          </Link>
+          <form action="/catalog" className="hidden flex-1 items-center gap-3 md:flex md:max-w-md">
+            <input
+              name="q"
+              placeholder="Search for delicacies..."
+              className="clay-input w-full px-5 py-2.5 text-sm"
+            />
+            <button className="clay-button px-4 py-2 text-xs font-semibold" type="submit">
+              Search
+            </button>
+          </form>
+          <div className="flex items-center gap-2 text-[color:var(--primary)] sm:gap-4">
+            <Link href="/cart" className="relative rounded-full p-2 transition-colors hover:bg-[color:var(--surface-high)]/70" aria-label="Open cart">
+              <span className="material-symbols-outlined">shopping_cart</span>
+              {itemCount > 0 ? (
+                <span className="absolute -top-2 -right-2 rounded-full bg-[color:var(--primary)] px-1.5 py-0.5 text-[10px] font-bold text-white">
+                  {itemCount}
+                </span>
+              ) : null}
+            </Link>
+            <Link href="/login" className="rounded-full p-2 transition-colors hover:bg-[color:var(--surface-high)]/70" aria-label="Open login">
+              <span className="material-symbols-outlined">account_circle</span>
+            </Link>
+            <button
+              type="button"
+              aria-label="Toggle navigation menu"
+              aria-expanded={mobileOpen}
+              onClick={() => setMobileOpen((previous) => !previous)}
+              className="rounded-full p-2 transition-colors hover:bg-[color:var(--surface-high)]/70 md:hidden"
+            >
+              <span className="material-symbols-outlined">{mobileOpen ? "close" : "menu"}</span>
+            </button>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 px-4 py-3 sm:px-5 sm:py-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <Link href="/" className="font-display text-[1.65rem] font-black tracking-[0.06em] text-[color:var(--foreground)] sm:text-2xl">BAKERY</Link>
-            <form action="/catalog" className="hidden w-full max-w-[420px] items-center gap-2 sm:flex">
+
+        {mobileOpen ? (
+          <div className="space-y-3 border-t border-[color:var(--surface-highest)]/65 pt-3 md:hidden">
+            <form action="/catalog" className="flex items-center gap-2">
               <input
                 name="q"
-                placeholder="Search croissants, cakes, pastries..."
-                className="clay-input w-full px-4 py-2 text-sm"
+                placeholder="Search for delicacies..."
+                className="clay-input w-full px-4 py-2.5 text-sm"
               />
-              <button className="clay-button px-4 py-2 text-xs font-semibold" type="submit">Search</button>
+              <button className="clay-button px-4 py-2 text-xs font-semibold" type="submit">
+                Search
+              </button>
             </form>
+            <nav className="grid grid-cols-2 gap-2">
+              {navItems.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  onClick={closeMobileMenu}
+                  className="clay-inset px-4 py-2 text-center text-xs font-semibold text-[color:var(--muted)] transition-colors hover:text-[color:var(--primary)]"
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <Link onClick={closeMobileMenu} href="/custom-order" className="clay-inset px-4 py-2 text-center text-xs font-semibold text-[color:var(--muted)] transition-colors hover:text-[color:var(--primary)]">
+                Custom
+              </Link>
+              <Link onClick={closeMobileMenu} href="/cart" className="clay-button px-4 py-2 text-center text-xs font-semibold">
+                Order Now
+              </Link>
+            </nav>
           </div>
+        ) : null}
 
-          <nav className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs font-semibold tracking-wide text-[color:var(--foreground)] sm:text-sm md:gap-x-6">
-            <Link href="/" className="leading-none">Home</Link>
-            <Link href="/store" className="leading-none">Store</Link>
-            <Link href="/catalog" className="leading-none">Menu</Link>
-            <Link href="/#about" className="leading-none">About</Link>
-            <Link href="/#faq" className="leading-none">FAQ</Link>
-            <Link href="/custom-order" className="leading-none">Custom</Link>
-            <Link href="/track-order" className="leading-none">Track</Link>
-            <Link href="/login" className="clay-inset px-3 py-2 text-[11px] sm:text-xs">Login</Link>
-            <Link href="/signup" className="clay-inset px-3 py-2 text-[11px] sm:text-xs">Signup</Link>
-            <Link href="/cart" className="clay-button px-4 py-2 text-[11px] sm:text-xs">Order Now ({itemCount})</Link>
-          </nav>
-        </div>
+        <nav className="hidden flex-wrap items-center justify-between gap-4 md:flex">
+          <div className="flex flex-wrap items-center gap-6 text-sm font-semibold">
+            {navItems.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="text-[color:var(--muted)] transition-colors hover:text-[color:var(--primary)]"
+              >
+                {item.label}
+              </Link>
+            ))}
+            <Link href="/custom-order" className="text-[color:var(--muted)] transition-colors hover:text-[color:var(--primary)]">
+              Custom
+            </Link>
+          </div>
+          <Link href="/cart" className="clay-button px-5 py-2 text-xs font-semibold">
+            Order Now
+          </Link>
+        </nav>
       </div>
     </motion.header>
   );

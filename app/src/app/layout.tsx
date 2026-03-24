@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
+import { Noto_Serif, Plus_Jakarta_Sans } from "next/font/google";
 import { Providers } from "@/components/Providers";
+import "@fontsource/material-symbols-outlined";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -9,7 +10,7 @@ const plusJakarta = Plus_Jakarta_Sans({
   display: "swap",
 });
 
-const playfair = Playfair_Display({
+const playfair = Noto_Serif({
   variable: "--font-display",
   subsets: ["latin"],
   display: "swap",

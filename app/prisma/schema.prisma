@@ -7,6 +7,213 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Owner {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  passwordHash String
+  fullName     String
+  phoneNumber  String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  events       OrderEvent[] @relation("OrderEventCreatedBy")
+}
+
+model BakeryProfile {
+  id              String   @id @default("main")
+  name            String   @default("Bake Factory")
+  tagline         String   @default("Premium handcrafted cakes for every celebration")
+  description     String?
+  phoneNumber     String?
+  whatsappNumber  String?
+  locationAddress String?
+  latitude        Float?
+  longitude       Float?
+  mapsEmbedUrl    String?
+  heroTitle       String   @default("Bake Factory")
+  heroSubtitle    String   @default("Clay-crafted cakes. Premium taste. Effortless ordering.")
+  heroCtaLabel    String   @default("Order Now")
+  heroImageUrl    String?
+  bannerImageUrl  String?
+  primaryColor    String   @default("#F9C5D5")
+  secondaryColor  String   @default("#FDEBD3")
+  accentColor     String   @default("#F7D6BF")
+  timezone        String   @default("Asia/Kolkata")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model AvailabilitySchedule {
+  id        String   @id @default(cuid())
+  dayOfWeek Int      @unique
+  isClosed  Boolean  @default(false)
+  openTime  String
+  closeTime String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContentBlock {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  title     String
+  content   String
+  imageUrl  String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String?
+  price       Int
+  imageUrl    String?
+  galleryJson String?
+  isFeatured  Boolean     @default(false)
+  isActive    Boolean     @default(true)
+  categoryId  String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  items       OrderItem[]
+  category    Category?   @relation(fields: [categoryId], references: [id])
+}
+
+model Order {
+  id                   String        @id @default(cuid())
+  orderNumber          String        @unique
+  type                 OrderType     @default(STANDARD)
+  customerName         String
+  customerPhone        String
+  customerEmail        String?
+  customerAddress      String?
+  notes                String?
+  customization        String?
+  customImageUrl       String?
+  customPriceQuote     Int?
+  totalAmount          Int
+  status               OrderStatus   @default(RECEIVED)
+  paymentStatus        PaymentStatus @default(UNPAID)
+  isLocked             Boolean       @default(false)
+  lockReason           String?
+  estimatedPrepMinutes Int?
+  acknowledgedAt       DateTime?
+  confirmedAt          DateTime?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  messages             MessageLog[]
+  events               OrderEvent[]
+  items                OrderItem[]
+  payments             Payment[]
+
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  productId   String?
+  productName String
+  quantity    Int
+  unitPrice   Int
+  lineTotal   Int
+  createdAt   DateTime @default(now())
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product? @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+}
+
+model OrderEvent {
+  id               String   @id @default(cuid())
+  orderId          String
+  type             String
+  payload          String?
+  createdByOwnerId String?
+  createdAt        DateTime @default(now())
+  createdByOwner   Owner?   @relation("OrderEventCreatedBy", fields: [createdByOwnerId], references: [id])
+  order            Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, createdAt])
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  orderId           String
+  provider          String
+  providerPaymentId String?
+  amount            Int
+  status            PaymentStatus @default(PENDING)
+  paymentLink       String?
+  paidAt            DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  order             Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+model WebhookEvent {
+  id              String   @id @default(cuid())
+  provider        String
+  providerEventId String
+  payload         String
+  processedAt     DateTime @default(now())
+
+  @@unique([provider, providerEventId])
+}
+
+model MessageLog {
+  id                String        @id @default(cuid())
+  orderId           String?
+  channel           String        @default("whatsapp")
+  templateName      String?
+  body              String
+  status            MessageStatus @default(QUEUED)
+  providerMessageId String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  order             Order?        @relation(fields: [orderId], references: [id])
+
+  @@index([createdAt])
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  source    String?  @default("footer")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+}
+
+model PromoCode {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  description     String?
+  discountPercent Int
+  minSubtotal     Int       @default(0)
+  isActive        Boolean   @default(true)
+  startsAt        DateTime  @default(now()) @db.Timestamptz(6)
+  expiresAt       DateTime? @db.Timestamptz(6)
+  createdAt       DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@index([code])
+}
+
 enum OrderType {
   STANDARD
   CUSTOM
@@ -33,219 +240,4 @@ enum MessageStatus {
   QUEUED
   SENT
   FAILED
-}
-
-model Owner {
-  id           String       @id @default(cuid())
-  email        String       @unique
-  passwordHash String
-  fullName     String
-  phoneNumber  String?
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  events       OrderEvent[] @relation("OrderEventCreatedBy")
-}
-
-model BakeryProfile {
-  id                 String   @id @default("main")
-  name               String   @default("Bake Factory")
-  tagline            String   @default("Premium handcrafted cakes for every celebration")
-  description        String?
-  phoneNumber        String?
-  whatsappNumber     String?
-  locationAddress    String?
-  latitude           Float?
-  longitude          Float?
-  mapsEmbedUrl       String?
-  heroTitle          String   @default("Bake Factory")
-  heroSubtitle       String   @default("Clay-crafted cakes. Premium taste. Effortless ordering.")
-  heroCtaLabel       String   @default("Order Now")
-  heroImageUrl       String?
-  bannerImageUrl     String?
-  primaryColor       String   @default("#F9C5D5")
-  secondaryColor     String   @default("#FDEBD3")
-  accentColor        String   @default("#F7D6BF")
-  timezone           String   @default("Asia/Kolkata")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-}
-
-model AvailabilitySchedule {
-  id        String   @id @default(cuid())
-  dayOfWeek Int
-  isClosed  Boolean  @default(false)
-  openTime  String
-  closeTime String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([dayOfWeek])
-}
-
-model ContentBlock {
-  id         String   @id @default(cuid())
-  key        String   @unique
-  title      String
-  content    String
-  imageUrl   String?
-  sortOrder  Int      @default(0)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-}
-
-model Category {
-  id          String    @id @default(cuid())
-  name        String
-  slug        String    @unique
-  description String?
-  sortOrder   Int       @default(0)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  products    Product[]
-}
-
-model Product {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  description String?
-  price       Int
-  imageUrl    String?
-  galleryJson String?
-  isFeatured  Boolean  @default(false)
-  isActive    Boolean  @default(true)
-  categoryId  String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  category Category?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  items  OrderItem[]
-}
-
-model Order {
-  id                   String        @id @default(cuid())
-  orderNumber          String        @unique
-  type                 OrderType     @default(STANDARD)
-  customerName         String
-  customerPhone        String
-  customerEmail        String?
-  customerAddress      String?
-  notes                String?
-  customization        String?
-  customImageUrl       String?
-  customPriceQuote     Int?
-  totalAmount          Int
-  status               OrderStatus   @default(RECEIVED)
-  paymentStatus        PaymentStatus @default(UNPAID)
-  isLocked             Boolean       @default(false)
-  lockReason           String?
-  estimatedPrepMinutes Int?
-  acknowledgedAt       DateTime?
-  confirmedAt          DateTime?
-  createdAt            DateTime      @default(now())
-  updatedAt            DateTime      @updatedAt
-
-  items    OrderItem[]
-  events   OrderEvent[]
-  payments Payment[]
-  messages MessageLog[]
-
-  @@index([createdAt])
-}
-
-model OrderItem {
-  id          String   @id @default(cuid())
-  orderId     String
-  productId   String?
-  productName String
-  quantity    Int
-  unitPrice   Int
-  lineTotal   Int
-  createdAt   DateTime @default(now())
-
-  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
-
-  @@index([orderId])
-}
-
-model OrderEvent {
-  id              String   @id @default(cuid())
-  orderId         String
-  type            String
-  payload         String?
-  createdByOwnerId String?
-  createdAt       DateTime @default(now())
-
-  order          Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  createdByOwner Owner? @relation("OrderEventCreatedBy", fields: [createdByOwnerId], references: [id], onDelete: SetNull)
-
-  @@index([orderId, createdAt])
-}
-
-model Payment {
-  id                String        @id @default(cuid())
-  orderId           String
-  provider          String
-  providerPaymentId String?
-  amount            Int
-  status            PaymentStatus @default(PENDING)
-  paymentLink       String?
-  paidAt            DateTime?
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
-
-  order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
-  @@index([orderId])
-}
-
-model WebhookEvent {
-  id              String   @id @default(cuid())
-  provider        String
-  providerEventId String
-  payload         String
-  processedAt     DateTime @default(now())
-
-  @@unique([provider, providerEventId])
-}
-
-model MessageLog {
-  id                String        @id @default(cuid())
-  orderId           String?
-  channel           String        @default("whatsapp")
-  templateName      String?
-  body              String
-  status            MessageStatus @default(QUEUED)
-  providerMessageId String?
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
-
-  order  Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
-
-  @@index([createdAt])
-}
-
-model NewsletterSubscriber {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  source    String?  @default("footer")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model PromoCode {
-  id              String   @id @default(cuid())
-  code            String   @unique
-  description     String?
-  discountPercent Int
-  minSubtotal     Int      @default(0)
-  isActive        Boolean  @default(true)
-  startsAt        DateTime @default(now())
-  expiresAt       DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  @@index([code])
 }

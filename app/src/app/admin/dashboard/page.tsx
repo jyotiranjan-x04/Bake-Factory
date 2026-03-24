@@ -81,7 +81,11 @@ export default function AdminDashboardPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>([]);
   const [bakeryProfile, setBakeryProfile] = useState<BakeryProfile | null>(null);
-  const [analytics, setAnalytics] = useState<{ totalOrders: number; totalRevenue: number; popularProducts: { productName: string; _sum: { quantity: number | null } }[] } | null>(null);
+  const [analytics, setAnalytics] = useState<{
+    totalOrders: number;
+    totalRevenue: number;
+    popularProducts: { productName: string; _sum: { quantity: number | null } }[];
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const loadOrders = async () => {
@@ -150,6 +154,7 @@ export default function AdminDashboardPage() {
   }, []);
 
   const pendingOrders = useMemo(() => orders.filter((order) => order.status === "RECEIVED"), [orders]);
+  const recentOrders = useMemo(() => orders.slice(0, 6), [orders]);
 
   useEffect(() => {
     if (pendingOrders.length === 0) {
@@ -296,24 +301,47 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <main className="section-wrap py-6 sm:py-8">
-      <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
-        <aside className="clay-card h-fit p-4">
-          <div className="mb-4">
-            <p className="text-xs uppercase tracking-[0.22em] text-[color:var(--muted)]">Admin</p>
-            <h1 className="font-display text-xl font-bold">Demo Bakery</h1>
-            <p className="mt-1 text-xs text-[color:var(--muted)]">Owner Dashboard</p>
-          </div>
+    <main className="flex min-h-screen bg-[#F5EEE6] text-[#3B2A1E]">
+      <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col bg-[#F5EEE6] py-6 shadow-[0px_12px_32px_-4px_rgba(59,42,30,0.08)]">
+        <div className="mb-10 px-8">
+          <h1 className="font-display text-xl italic">Master&apos;s Ledger</h1>
+          <p className="mt-1 text-[12px] font-semibold uppercase tracking-[0.05em] text-[#6E5442]">Artisanal Control</p>
+        </div>
 
-          <nav className="space-y-2">
-            <button className={tab === "orders" ? "clay-button w-full px-4 py-2 text-sm" : "clay-inset w-full px-4 py-2 text-sm"} onClick={() => setTab("orders")}>Orders</button>
-            <button className={tab === "products" ? "clay-button w-full px-4 py-2 text-sm" : "clay-inset w-full px-4 py-2 text-sm"} onClick={() => setTab("products")}>Products & Categories</button>
-            <button className={tab === "content" ? "clay-button w-full px-4 py-2 text-sm" : "clay-inset w-full px-4 py-2 text-sm"} onClick={() => setTab("content")}>Content Management</button>
-            <button className={tab === "analytics" ? "clay-button w-full px-4 py-2 text-sm" : "clay-inset w-full px-4 py-2 text-sm"} onClick={() => setTab("analytics")}>Analytics</button>
-          </nav>
-
+        <nav className="flex-1 space-y-1">
           <button
-            className="clay-inset mt-4 w-full px-4 py-2 text-sm"
+            onClick={() => setTab("orders")}
+            className={tab === "orders" ? "flex w-full items-center gap-3 rounded-r-full bg-[#FFF7EE] px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-[#B07B4A] shadow-sm" : "flex w-full items-center gap-3 px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-[#3B2A1E] hover:bg-[#FFF7EE]/50 hover:text-[#B07B4A]"}
+          >
+            <span className="material-symbols-outlined">receipt_long</span>
+            <span>Orders</span>
+          </button>
+          <button
+            onClick={() => setTab("products")}
+            className={tab === "products" ? "flex w-full items-center gap-3 rounded-r-full bg-[#FFF7EE] px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-[#B07B4A] shadow-sm" : "flex w-full items-center gap-3 px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-[#3B2A1E] hover:bg-[#FFF7EE]/50 hover:text-[#B07B4A]"}
+          >
+            <span className="material-symbols-outlined">inventory_2</span>
+            <span>Inventory</span>
+          </button>
+          <button
+            onClick={() => setTab("content")}
+            className={tab === "content" ? "flex w-full items-center gap-3 rounded-r-full bg-[#FFF7EE] px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-[#B07B4A] shadow-sm" : "flex w-full items-center gap-3 px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-[#3B2A1E] hover:bg-[#FFF7EE]/50 hover:text-[#B07B4A]"}
+          >
+            <span className="material-symbols-outlined">dashboard</span>
+            <span>Store Content</span>
+          </button>
+          <button
+            onClick={() => setTab("analytics")}
+            className={tab === "analytics" ? "flex w-full items-center gap-3 rounded-r-full bg-[#FFF7EE] px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-[#B07B4A] shadow-sm" : "flex w-full items-center gap-3 px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-[#3B2A1E] hover:bg-[#FFF7EE]/50 hover:text-[#B07B4A]"}
+          >
+            <span className="material-symbols-outlined">analytics</span>
+            <span>Analytics</span>
+          </button>
+        </nav>
+
+        <div className="mt-auto px-8">
+          <button
+            className="w-full rounded-full bg-gradient-to-br from-[#B07B4A] to-[#C89A5A] py-4 text-xs font-bold uppercase tracking-wider text-white"
             onClick={async () => {
               await fetch("/api/auth/logout", { method: "POST" });
               window.location.href = "/admin/login";
@@ -321,37 +349,67 @@ export default function AdminDashboardPage() {
           >
             Logout
           </button>
-        </aside>
+        </div>
+      </aside>
 
-        <section className="space-y-5">
-          <section className="clay-card flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5">
-            <div>
-              <h2 className="font-display text-2xl font-extrabold sm:text-3xl">Bake Factory Owner Dashboard</h2>
-              <p className="mt-1 text-sm text-[color:var(--muted)]">Manage orders, custom requests, storefront content, and products.</p>
+      <div className="ml-64 flex min-h-screen flex-1 flex-col">
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-[#D9C7B4]/15 bg-[#FFF7EE]/80 px-8 backdrop-blur-md">
+          <div className="flex items-center gap-8">
+            <span className="font-display text-base font-bold">Master&apos;s Ledger</span>
+            <nav className="hidden gap-6 md:flex">
+              <button className="border-b-2 border-[#B07B4A] pb-1 text-sm font-bold text-[#B07B4A]">Overview</button>
+              <button className="text-sm text-[#6E5442] hover:text-[#B07B4A]">Reports</button>
+              <button className="text-sm text-[#6E5442] hover:text-[#B07B4A]">Settings</button>
+            </nav>
+          </div>
+
+          <div className="flex items-center gap-6">
+            <div className="hidden w-64 items-center rounded-full bg-[#E8D9C8] px-4 py-1.5 md:flex">
+              <span className="material-symbols-outlined mr-2 text-[#6E5442]">search</span>
+              <input className="w-full bg-transparent text-sm" placeholder="Search records..." />
             </div>
-            <div className="flex items-center gap-2">
-              <input className="clay-input hidden px-3 py-2 text-sm md:block" placeholder="Search orders" />
-              <span className="status-chip px-3 py-1 text-xs">Live</span>
-            </div>
+            <span className="material-symbols-outlined text-[#6E5442]">notifications</span>
+          </div>
+        </header>
+
+        <div className="flex-1 space-y-8 px-8 pb-10 pt-8">
+          <section className="grid grid-cols-1 gap-4 md:grid-cols-4">
+            <article className="rounded-xl border border-[#D9C7B4]/20 bg-[#FFF7EE] p-6">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-[#6E5442]">Total Revenue</p>
+              <h3 className="mt-2 font-display text-3xl text-[#B07B4A]">₹{analytics?.totalRevenue ?? 0}</h3>
+            </article>
+            <article className="rounded-xl border border-[#D9C7B4]/20 bg-[#FFF7EE] p-6">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-[#6E5442]">New Orders</p>
+              <h3 className="mt-2 font-display text-3xl">{analytics?.totalOrders ?? 0}</h3>
+            </article>
+            <article className="rounded-xl border border-[#D9C7B4]/20 bg-[#FFF7EE] p-6">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-[#6E5442]">Pending</p>
+              <h3 className="mt-2 font-display text-3xl">{pendingOrders.length}</h3>
+            </article>
+            <article className="rounded-xl border border-[#D9C7B4]/20 bg-[#FFF7EE] p-6">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-[#6E5442]">Products</p>
+              <h3 className="mt-2 font-display text-3xl">{products.length}</h3>
+            </article>
           </section>
 
           {pendingOrders.length > 0 ? (
-            <section className="clay-card border border-[color:var(--line)] bg-[#f1e4d6] p-4 sm:p-5">
-              <h2 className="font-bold text-[color:var(--foreground)]">🔔 New order alert ({pendingOrders.length})</h2>
-              <p className="text-sm text-[color:var(--muted)]">Ringtone continues until acknowledged.</p>
+            <section className="rounded-xl border border-[#D9C7B4]/20 bg-[#FFF7EE] p-4">
+              <h2 className="text-sm font-bold">🔔 New order alert ({pendingOrders.length})</h2>
+              <p className="text-xs text-[#6E5442]">Ringtone continues until acknowledged.</p>
             </section>
           ) : null}
 
-          {error ? <p className="clay-error text-sm">{error}</p> : null}
+          {error ? <p className="text-sm text-[#8a4c3a]">{error}</p> : null}
 
           {tab === "orders" ? (
-            <section className="grid gap-4">
-              {orders.map((order) => (
-                <article key={order.id} className="clay-card space-y-3 p-4">
+            <section className="space-y-4 rounded-xl border border-[#D9C7B4]/20 bg-[#FFF7EE] p-5">
+              <h4 className="font-display text-xl">Recent Ledger Entries</h4>
+              {recentOrders.map((order) => (
+                <article key={order.id} className="rounded-lg border border-[#E8D9C8] bg-white/60 p-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <p className="font-semibold">{order.orderNumber} · {order.customerName}</p>
-                      <p className="text-sm text-[color:var(--muted)]">{order.customerPhone}</p>
+                      <p className="text-xs text-[#6E5442]">{order.customerPhone}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <StatusPill status={order.type} />
@@ -360,22 +418,20 @@ export default function AdminDashboardPage() {
                     </div>
                   </div>
 
-                  {order.customization ? <p className="text-sm text-[color:var(--muted)]">Custom notes: {order.customization}</p> : null}
-                  {order.customImageUrl ? <a href={order.customImageUrl} target="_blank" className="clay-link text-sm underline">View uploaded custom image</a> : null}
+                  {order.customization ? <p className="mt-2 text-sm text-[#6E5442]">Custom notes: {order.customization}</p> : null}
+                  {order.customImageUrl ? <a href={order.customImageUrl} target="_blank" className="mt-1 inline-block text-xs underline">View uploaded custom image</a> : null}
 
-                  <p className="font-semibold">Amount: ₹{order.totalAmount}</p>
+                  <p className="mt-2 text-sm font-semibold">Amount: ₹{order.totalAmount}</p>
 
-                  {order.status === "RECEIVED" ? (
-                    <SlideAcknowledge onComplete={() => acknowledgeOrder(order.id)} />
-                  ) : null}
+                  {order.status === "RECEIVED" ? <SlideAcknowledge onComplete={() => acknowledgeOrder(order.id)} /> : null}
 
-                  <div className="flex flex-wrap gap-2">
-                    <button className="clay-button px-3 py-2 text-sm" onClick={() => confirmOrder(order.id)}>Confirm</button>
-                    <button className="clay-inset px-3 py-2 text-sm" onClick={() => updateStatus(order.id, "BAKING")}>Baking</button>
-                    <button className="clay-inset px-3 py-2 text-sm" onClick={() => updateStatus(order.id, "READY")}>Ready</button>
-                    <button className="clay-inset px-3 py-2 text-sm" onClick={() => sendPaymentLink(order.id)}>Send payment link</button>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button className="rounded-full bg-gradient-to-br from-[#B07B4A] to-[#C89A5A] px-3 py-2 text-xs font-semibold text-white" onClick={() => confirmOrder(order.id)}>Confirm</button>
+                    <button className="rounded-full bg-[#E8D9C8] px-3 py-2 text-xs font-semibold" onClick={() => updateStatus(order.id, "BAKING")}>Baking</button>
+                    <button className="rounded-full bg-[#E8D9C8] px-3 py-2 text-xs font-semibold" onClick={() => updateStatus(order.id, "READY")}>Ready</button>
+                    <button className="rounded-full bg-[#E8D9C8] px-3 py-2 text-xs font-semibold" onClick={() => sendPaymentLink(order.id)}>Send payment link</button>
                     {order.type === "CUSTOM" ? (
-                      <button className="clay-inset px-3 py-2 text-sm" onClick={() => setCustomQuote(order.id)}>Set custom price</button>
+                      <button className="rounded-full bg-[#E8D9C8] px-3 py-2 text-xs font-semibold" onClick={() => setCustomQuote(order.id)}>Set custom price</button>
                     ) : null}
                   </div>
                 </article>
@@ -385,126 +441,126 @@ export default function AdminDashboardPage() {
 
           {tab === "products" ? (
             <section className="grid gap-5 lg:grid-cols-2">
-          <article className="clay-card p-5">
-            <h2 className="text-xl font-bold">Create Category</h2>
-            <form className="mt-3 space-y-3" onSubmit={createCategory}>
-              <input name="name" placeholder="Category name" className="clay-inset w-full px-3 py-2" required />
-              <input name="slug" placeholder="category-slug" className="clay-inset w-full px-3 py-2" required />
-              <input name="description" placeholder="Description" className="clay-inset w-full px-3 py-2" />
-              <input name="sortOrder" type="number" placeholder="Sort order" className="clay-inset w-full px-3 py-2" defaultValue={0} />
-              <button className="clay-button px-4 py-2 text-sm font-semibold" type="submit">Save Category</button>
-            </form>
-          </article>
+              <article className="rounded-xl border border-[#D9C7B4]/20 bg-[#FFF7EE] p-5">
+                <h2 className="text-xl font-bold">Create Category</h2>
+                <form className="mt-3 space-y-3" onSubmit={createCategory}>
+                  <input name="name" placeholder="Category name" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" required />
+                  <input name="slug" placeholder="category-slug" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" required />
+                  <input name="description" placeholder="Description" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" />
+                  <input name="sortOrder" type="number" placeholder="Sort order" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" defaultValue={0} />
+                  <button className="rounded-full bg-gradient-to-br from-[#B07B4A] to-[#C89A5A] px-4 py-2 text-sm font-semibold text-white" type="submit">Save Category</button>
+                </form>
+              </article>
 
-          <article className="clay-card p-5">
-            <h2 className="text-xl font-bold">Create Product</h2>
-            <form className="mt-3 space-y-3" onSubmit={createProduct}>
-              <input name="name" placeholder="Product name" className="clay-inset w-full px-3 py-2" required />
-              <input name="slug" placeholder="product-slug" className="clay-inset w-full px-3 py-2" required />
-              <textarea name="description" placeholder="Description" className="clay-inset w-full px-3 py-2" rows={3} required />
-              <input name="price" type="number" placeholder="Price" className="clay-inset w-full px-3 py-2" required />
-              <input name="imageUrl" placeholder="Image URL (optional)" className="clay-inset w-full px-3 py-2" />
-              <select name="categoryId" className="clay-inset w-full px-3 py-2">
-                <option value="">No category</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>{category.name}</option>
-                ))}
-              </select>
-              <label className="flex items-center gap-2 text-sm"><input name="isFeatured" type="checkbox" /> Featured</label>
-              <button className="clay-button px-4 py-2 text-sm font-semibold" type="submit">Save Product</button>
-            </form>
-          </article>
+              <article className="rounded-xl border border-[#D9C7B4]/20 bg-[#FFF7EE] p-5">
+                <h2 className="text-xl font-bold">Create Product</h2>
+                <form className="mt-3 space-y-3" onSubmit={createProduct}>
+                  <input name="name" placeholder="Product name" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" required />
+                  <input name="slug" placeholder="product-slug" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" required />
+                  <textarea name="description" placeholder="Description" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" rows={3} required />
+                  <input name="price" type="number" placeholder="Price" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" required />
+                  <input name="imageUrl" placeholder="Image URL (optional)" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" />
+                  <select name="categoryId" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2">
+                    <option value="">No category</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>{category.name}</option>
+                    ))}
+                  </select>
+                  <label className="flex items-center gap-2 text-sm"><input name="isFeatured" type="checkbox" /> Featured</label>
+                  <button className="rounded-full bg-gradient-to-br from-[#B07B4A] to-[#C89A5A] px-4 py-2 text-sm font-semibold text-white" type="submit">Save Product</button>
+                </form>
+              </article>
 
-          <article className="clay-card p-5 lg:col-span-2">
-            <h3 className="text-lg font-bold">Current Products</h3>
-            <div className="mt-3 grid gap-2 md:grid-cols-2">
-              {products.map((product) => (
-                <div key={product.id} className="clay-inset flex items-center justify-between px-3 py-2 text-sm">
-                  <span>{product.name} · ₹{product.price}</span>
-                  <button
-                    className="clay-danger"
-                    onClick={async () => {
-                      await fetch(`/api/admin/products/${product.id}`, { method: "DELETE" });
-                      await loadProducts();
-                    }}
-                  >
-                    Delete
-                  </button>
+              <article className="rounded-xl border border-[#D9C7B4]/20 bg-[#FFF7EE] p-5 lg:col-span-2">
+                <h3 className="text-lg font-bold">Current Products</h3>
+                <div className="mt-3 grid gap-2 md:grid-cols-2">
+                  {products.map((product) => (
+                    <div key={product.id} className="flex items-center justify-between rounded-lg bg-[#E8D9C8] px-3 py-2 text-sm">
+                      <span>{product.name} · ₹{product.price}</span>
+                      <button
+                        className="text-[#8a4c3a]"
+                        onClick={async () => {
+                          await fetch(`/api/admin/products/${product.id}`, { method: "DELETE" });
+                          await loadProducts();
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </article>
-        </section>
+              </article>
+            </section>
           ) : null}
 
           {tab === "content" ? (
             <section className="grid gap-5 lg:grid-cols-2">
-          <article className="clay-card p-5 lg:col-span-2">
-            <h2 className="text-xl font-bold">Homepage & Bakery Profile</h2>
-            <form className="mt-3 grid gap-3 md:grid-cols-2" onSubmit={updateBakeryProfile}>
-              <input name="name" defaultValue={bakeryProfile?.name || "Bake Factory"} placeholder="Bakery name" className="clay-inset w-full px-3 py-2" required />
-              <input name="tagline" defaultValue={bakeryProfile?.tagline || "Premium handcrafted cakes"} placeholder="Tagline" className="clay-inset w-full px-3 py-2" required />
-              <input name="phoneNumber" defaultValue={bakeryProfile?.phoneNumber || ""} placeholder="Phone number" className="clay-inset w-full px-3 py-2" required />
-              <input name="whatsappNumber" defaultValue={bakeryProfile?.whatsappNumber || ""} placeholder="WhatsApp number" className="clay-inset w-full px-3 py-2" required />
-              <input name="locationAddress" defaultValue={bakeryProfile?.locationAddress || ""} placeholder="Location address" className="clay-inset w-full px-3 py-2" required />
-              <input name="mapsEmbedUrl" defaultValue={bakeryProfile?.mapsEmbedUrl || ""} placeholder="Google Maps embed URL" className="clay-inset w-full px-3 py-2" />
-              <input name="heroTitle" defaultValue={bakeryProfile?.heroTitle || "Bake Factory"} placeholder="Hero title" className="clay-inset w-full px-3 py-2" required />
-              <input name="heroCtaLabel" defaultValue={bakeryProfile?.heroCtaLabel || "Order Now"} placeholder="Hero CTA label" className="clay-inset w-full px-3 py-2" required />
-              <input name="heroImageUrl" defaultValue={bakeryProfile?.heroImageUrl || ""} placeholder="Hero image URL" className="clay-inset w-full px-3 py-2" />
-              <input name="bannerImageUrl" defaultValue={bakeryProfile?.bannerImageUrl || ""} placeholder="Banner image URL" className="clay-inset w-full px-3 py-2" />
-              <textarea name="heroSubtitle" defaultValue={bakeryProfile?.heroSubtitle || ""} placeholder="Hero subtitle" className="clay-inset w-full px-3 py-2 md:col-span-2" rows={2} required />
-              <textarea name="description" defaultValue={bakeryProfile?.description || ""} placeholder="Bakery description" className="clay-inset w-full px-3 py-2 md:col-span-2" rows={3} required />
-              <button className="clay-button px-4 py-2 text-sm font-semibold md:col-span-2" type="submit">Save Homepage Profile</button>
-            </form>
-          </article>
+              <article className="rounded-xl border border-[#D9C7B4]/20 bg-[#FFF7EE] p-5 lg:col-span-2">
+                <h2 className="text-xl font-bold">Homepage & Bakery Profile</h2>
+                <form className="mt-3 grid gap-3 md:grid-cols-2" onSubmit={updateBakeryProfile}>
+                  <input name="name" defaultValue={bakeryProfile?.name || "Bake Factory"} placeholder="Bakery name" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" required />
+                  <input name="tagline" defaultValue={bakeryProfile?.tagline || "Premium handcrafted cakes"} placeholder="Tagline" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" required />
+                  <input name="phoneNumber" defaultValue={bakeryProfile?.phoneNumber || ""} placeholder="Phone number" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" required />
+                  <input name="whatsappNumber" defaultValue={bakeryProfile?.whatsappNumber || ""} placeholder="WhatsApp number" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" required />
+                  <input name="locationAddress" defaultValue={bakeryProfile?.locationAddress || ""} placeholder="Location address" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" required />
+                  <input name="mapsEmbedUrl" defaultValue={bakeryProfile?.mapsEmbedUrl || ""} placeholder="Google Maps embed URL" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" />
+                  <input name="heroTitle" defaultValue={bakeryProfile?.heroTitle || "Bake Factory"} placeholder="Hero title" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" required />
+                  <input name="heroCtaLabel" defaultValue={bakeryProfile?.heroCtaLabel || "Order Now"} placeholder="Hero CTA label" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" required />
+                  <input name="heroImageUrl" defaultValue={bakeryProfile?.heroImageUrl || ""} placeholder="Hero image URL" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" />
+                  <input name="bannerImageUrl" defaultValue={bakeryProfile?.bannerImageUrl || ""} placeholder="Banner image URL" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" />
+                  <textarea name="heroSubtitle" defaultValue={bakeryProfile?.heroSubtitle || ""} placeholder="Hero subtitle" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2 md:col-span-2" rows={2} required />
+                  <textarea name="description" defaultValue={bakeryProfile?.description || ""} placeholder="Bakery description" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2 md:col-span-2" rows={3} required />
+                  <button className="rounded-full bg-gradient-to-br from-[#B07B4A] to-[#C89A5A] px-4 py-2 text-sm font-semibold text-white md:col-span-2" type="submit">Save Homepage Profile</button>
+                </form>
+              </article>
 
-          <article className="clay-card p-5">
-            <h2 className="text-xl font-bold">Update Frontend Content Block</h2>
-            <form className="mt-3 space-y-3" onSubmit={updateContent}>
-              <input name="key" placeholder="unique key (e.g. home_feature_3)" className="clay-inset w-full px-3 py-2" required />
-              <input name="title" placeholder="Title" className="clay-inset w-full px-3 py-2" required />
-              <textarea name="content" placeholder="Content" className="clay-inset w-full px-3 py-2" rows={4} required />
-              <input name="imageUrl" placeholder="Image URL (optional)" className="clay-inset w-full px-3 py-2" />
-              <input name="sortOrder" type="number" defaultValue={0} className="clay-inset w-full px-3 py-2" />
-              <button className="clay-button px-4 py-2 text-sm font-semibold" type="submit">Save Content</button>
-            </form>
-          </article>
+              <article className="rounded-xl border border-[#D9C7B4]/20 bg-[#FFF7EE] p-5">
+                <h2 className="text-xl font-bold">Update Frontend Content Block</h2>
+                <form className="mt-3 space-y-3" onSubmit={updateContent}>
+                  <input name="key" placeholder="unique key (e.g. home_feature_3)" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" required />
+                  <input name="title" placeholder="Title" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" required />
+                  <textarea name="content" placeholder="Content" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" rows={4} required />
+                  <input name="imageUrl" placeholder="Image URL (optional)" className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" />
+                  <input name="sortOrder" type="number" defaultValue={0} className="w-full rounded-lg bg-[#E8D9C8] px-3 py-2" />
+                  <button className="rounded-full bg-gradient-to-br from-[#B07B4A] to-[#C89A5A] px-4 py-2 text-sm font-semibold text-white" type="submit">Save Content</button>
+                </form>
+              </article>
 
-          <article className="clay-card p-5">
-            <h3 className="text-lg font-bold">Existing Content Blocks</h3>
-            <div className="mt-3 space-y-2">
-              {contentBlocks.map((item) => (
-                <div key={item.id} className="clay-inset px-3 py-2">
-                  <p className="font-semibold">{item.key} · {item.title}</p>
-                  <p className="text-sm text-[color:var(--muted)]">{item.content}</p>
+              <article className="rounded-xl border border-[#D9C7B4]/20 bg-[#FFF7EE] p-5">
+                <h3 className="text-lg font-bold">Existing Content Blocks</h3>
+                <div className="mt-3 space-y-2">
+                  {contentBlocks.map((item) => (
+                    <div key={item.id} className="rounded-lg bg-[#E8D9C8] px-3 py-2">
+                      <p className="font-semibold">{item.key} · {item.title}</p>
+                      <p className="text-sm text-[#6E5442]">{item.content}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </article>
-        </section>
+              </article>
+            </section>
           ) : null}
 
           {tab === "analytics" ? (
             <section className="grid gap-5 md:grid-cols-3">
-          <article className="clay-card p-5">
-            <p className="text-sm text-[color:var(--muted)]">Total Orders</p>
-            <p className="text-3xl font-bold">{analytics?.totalOrders ?? 0}</p>
-          </article>
-          <article className="clay-card p-5">
-            <p className="text-sm text-[color:var(--muted)]">Total Revenue</p>
-            <p className="text-3xl font-bold">₹{analytics?.totalRevenue ?? 0}</p>
-          </article>
-          <article className="clay-card p-5">
-            <p className="text-sm text-[color:var(--muted)]">Popular Products</p>
-            <ul className="mt-2 space-y-1 text-sm">
-              {analytics?.popularProducts?.map((item) => (
-                <li key={item.productName}>{item.productName} · {item._sum.quantity ?? 0}</li>
-              ))}
-            </ul>
-          </article>
-        </section>
+              <article className="rounded-xl border border-[#D9C7B4]/20 bg-[#FFF7EE] p-5">
+                <p className="text-sm text-[#6E5442]">Total Orders</p>
+                <p className="text-3xl font-bold">{analytics?.totalOrders ?? 0}</p>
+              </article>
+              <article className="rounded-xl border border-[#D9C7B4]/20 bg-[#FFF7EE] p-5">
+                <p className="text-sm text-[#6E5442]">Total Revenue</p>
+                <p className="text-3xl font-bold">₹{analytics?.totalRevenue ?? 0}</p>
+              </article>
+              <article className="rounded-xl border border-[#D9C7B4]/20 bg-[#FFF7EE] p-5">
+                <p className="text-sm text-[#6E5442]">Popular Products</p>
+                <ul className="mt-2 space-y-1 text-sm">
+                  {analytics?.popularProducts?.map((item) => (
+                    <li key={item.productName}>{item.productName} · {item._sum.quantity ?? 0}</li>
+                  ))}
+                </ul>
+              </article>
+            </section>
           ) : null}
-        </section>
+        </div>
       </div>
     </main>
   );

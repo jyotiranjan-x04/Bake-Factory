@@ -41,3 +41,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# stitch web design artifacts
+stitch_bakery_web_design/
+stitch_asset_map.json
+stitch_asset_urls.txt
+
+# locally generated test/build logs
+*.log

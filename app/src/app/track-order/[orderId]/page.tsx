@@ -2,6 +2,7 @@
 
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { BackButton } from "@/components/BackButton";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -54,6 +55,7 @@ export default function TrackOrderPage() {
     <main className="pb-10">
       <SiteHeader />
       <section className="section-wrap clay-card p-6">
+        <BackButton fallbackHref="/track-order" />
         <p className="text-xs uppercase tracking-[0.24em] text-[color:var(--muted)]">Order Status</p>
         <h1 className="font-display text-3xl font-bold">Track Order Status</h1>
         <p className="mt-2 text-sm text-[color:var(--muted)]">Order ID: {orderId}</p>

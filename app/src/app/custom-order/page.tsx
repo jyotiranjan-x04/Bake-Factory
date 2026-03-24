@@ -2,6 +2,7 @@
 
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { BackButton } from "@/components/BackButton";
 import { motion } from "framer-motion";
 import { FormEvent, useState } from "react";
 
@@ -35,6 +36,9 @@ export default function CustomOrderPage() {
     <main className="pb-10">
       <SiteHeader />
       <section className="section-wrap grid gap-5 md:grid-cols-[1.1fr_0.9fr]">
+        <div className="md:col-span-2">
+          <BackButton fallbackHref="/" />
+        </div>
         <motion.form
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}

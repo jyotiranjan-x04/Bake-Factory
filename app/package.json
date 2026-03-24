@@ -17,10 +17,12 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@fontsource/material-symbols-outlined": "^5.2.38",
     "@prisma/client": "^6.16.2",
     "bcryptjs": "^3.0.3",
     "framer-motion": "^12.38.0",
     "jose": "^6.2.2",
+    "lucide-react": "^1.0.1",
     "next": "16.2.1",
     "prisma": "^6.16.2",
     "razorpay": "^2.9.6",
