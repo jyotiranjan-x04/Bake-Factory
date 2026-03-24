@@ -76,6 +76,7 @@ function beep() {
 
 export default function AdminDashboardPage() {
   const [tab, setTab] = useState<"orders" | "products" | "content" | "analytics">("orders");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -155,6 +156,11 @@ export default function AdminDashboardPage() {
 
   const pendingOrders = useMemo(() => orders.filter((order) => order.status === "RECEIVED"), [orders]);
   const recentOrders = useMemo(() => orders.slice(0, 6), [orders]);
+
+  const switchTab = (nextTab: "orders" | "products" | "content" | "analytics") => {
+    setTab(nextTab);
+    setSidebarOpen(false);
+  };
 
   useEffect(() => {
     if (pendingOrders.length === 0) {
@@ -301,8 +307,17 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <main className="flex min-h-screen bg-[#F5EEE6] text-[#3B2A1E]">
-      <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col bg-[#F5EEE6] py-6 shadow-[0px_12px_32px_-4px_rgba(59,42,30,0.08)]">
+    <main className="relative flex min-h-screen bg-[#F5EEE6] text-[#3B2A1E]">
+      {sidebarOpen ? (
+        <button
+          type="button"
+          aria-label="Close sidebar"
+          className="fixed inset-0 z-40 bg-[#3B2A1E]/35 backdrop-blur-[1px] md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      ) : null}
+
+      <aside className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col bg-[#F5EEE6] py-6 shadow-[0px_12px_32px_-4px_rgba(59,42,30,0.12)] transition-transform duration-300 md:z-40 md:w-64 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
         <div className="mb-10 px-8">
           <h1 className="font-display text-xl italic">Master&apos;s Ledger</h1>
           <p className="mt-1 text-[12px] font-semibold uppercase tracking-[0.05em] text-[#6E5442]">Artisanal Control</p>
@@ -310,28 +325,28 @@ export default function AdminDashboardPage() {
 
         <nav className="flex-1 space-y-1">
           <button
-            onClick={() => setTab("orders")}
+            onClick={() => switchTab("orders")}
             className={tab === "orders" ? "flex w-full items-center gap-3 rounded-r-full bg-[#FFF7EE] px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-[#B07B4A] shadow-sm" : "flex w-full items-center gap-3 px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-[#3B2A1E] hover:bg-[#FFF7EE]/50 hover:text-[#B07B4A]"}
           >
             <span className="material-symbols-outlined">receipt_long</span>
             <span>Orders</span>
           </button>
           <button
-            onClick={() => setTab("products")}
+            onClick={() => switchTab("products")}
             className={tab === "products" ? "flex w-full items-center gap-3 rounded-r-full bg-[#FFF7EE] px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-[#B07B4A] shadow-sm" : "flex w-full items-center gap-3 px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-[#3B2A1E] hover:bg-[#FFF7EE]/50 hover:text-[#B07B4A]"}
           >
             <span className="material-symbols-outlined">inventory_2</span>
             <span>Inventory</span>
           </button>
           <button
-            onClick={() => setTab("content")}
+            onClick={() => switchTab("content")}
             className={tab === "content" ? "flex w-full items-center gap-3 rounded-r-full bg-[#FFF7EE] px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-[#B07B4A] shadow-sm" : "flex w-full items-center gap-3 px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-[#3B2A1E] hover:bg-[#FFF7EE]/50 hover:text-[#B07B4A]"}
           >
             <span className="material-symbols-outlined">dashboard</span>
             <span>Store Content</span>
           </button>
           <button
-            onClick={() => setTab("analytics")}
+            onClick={() => switchTab("analytics")}
             className={tab === "analytics" ? "flex w-full items-center gap-3 rounded-r-full bg-[#FFF7EE] px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-[#B07B4A] shadow-sm" : "flex w-full items-center gap-3 px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.05em] text-[#3B2A1E] hover:bg-[#FFF7EE]/50 hover:text-[#B07B4A]"}
           >
             <span className="material-symbols-outlined">analytics</span>
@@ -352,9 +367,17 @@ export default function AdminDashboardPage() {
         </div>
       </aside>
 
-      <div className="ml-64 flex min-h-screen flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-[#D9C7B4]/15 bg-[#FFF7EE]/80 px-8 backdrop-blur-md">
+      <div className="flex min-h-screen flex-1 flex-col md:ml-64">
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[#D9C7B4]/15 bg-[#FFF7EE]/90 px-4 backdrop-blur-md sm:px-6 lg:px-8">
           <div className="flex items-center gap-8">
+            <button
+              type="button"
+              aria-label="Open sidebar"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#E8D9C8] text-[#3B2A1E] md:hidden"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <span className="material-symbols-outlined text-[20px]">menu</span>
+            </button>
             <span className="font-display text-base font-bold">Master&apos;s Ledger</span>
             <nav className="hidden gap-6 md:flex">
               <button className="border-b-2 border-[#B07B4A] pb-1 text-sm font-bold text-[#B07B4A]">Overview</button>
@@ -372,8 +395,8 @@ export default function AdminDashboardPage() {
           </div>
         </header>
 
-        <div className="flex-1 space-y-8 px-8 pb-10 pt-8">
-          <section className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div className="flex-1 space-y-6 px-4 pb-8 pt-6 sm:space-y-8 sm:px-6 sm:pb-10 sm:pt-8 lg:px-8">
+          <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <article className="rounded-xl border border-[#D9C7B4]/20 bg-[#FFF7EE] p-6">
               <p className="text-[10px] uppercase tracking-[0.2em] text-[#6E5442]">Total Revenue</p>
               <h3 className="mt-2 font-display text-3xl text-[#B07B4A]">₹{analytics?.totalRevenue ?? 0}</h3>
